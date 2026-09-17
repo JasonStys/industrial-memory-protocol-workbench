@@ -37,7 +37,7 @@ def discover_source_files() -> list[Path]:
             continue
         if path.is_file() and (path.suffix in INCLUDED_EXTENSIONS or path.name == "CMakeLists.txt"):
             files.append(path)
-    return sorted(files)
+    return sorted(files, key=lambda path: path.relative_to(REPOSITORY_ROOT).as_posix().casefold())
 
 
 def symbols_for(source: str) -> list[tuple[str, int]]:
