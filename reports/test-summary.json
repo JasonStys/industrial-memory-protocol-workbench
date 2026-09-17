@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "deterministic_named_tests": 20,
+  "ctest_executables": 1,
+  "generated_valid_frame_round_trips": 10000,
+  "checksum_mutations_rejected": 2000,
+  "arbitrary_bounded_inputs": 10000,
+  "demo_scenarios": {
+    "read_only_default": "passed",
+    "transient_read_timeout": "passed",
+    "corrupted_response": "passed",
+    "explicit_write_and_readback": "passed"
+  }
+}
+

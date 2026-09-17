@@ -1,0 +1,14 @@
+# @file dependabot.yml
+# @brief Checks GitHub Actions references for updates on a bounded weekly schedule.
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Los_Angeles
+    open-pull-requests-limit: 3
+

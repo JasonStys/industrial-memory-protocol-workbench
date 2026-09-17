@@ -1,0 +1,11 @@
+{
+  "build": "MSVC 19.51 Release",
+  "path": "encode -> MemoryServer::handle -> decode",
+  "operations_per_sample": 50000,
+  "samples_ms": [62.623, 64.932, 65.595, 70.447, 57.741],
+  "median_ms": 64.932,
+  "median_operations_per_second": 770033.974,
+  "checksum": 6254125000,
+  "scope_note": "In-process synthetic benchmark; excludes network, encryption, and device latency."
+}
+

@@ -1,0 +1,88 @@
+# @file ci.yml
+# @brief Runs cross-platform builds, sanitizers, fuzz smoke tests, policy checks, and benchmarks.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-sanitizers-and-fuzzing:
+    name: Linux sanitizers and fuzzing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check C++ formatting
+        run: >-
+          find include src apps tests fuzz -type f \( -name '*.cpp' -o -name '*.hpp' \)
+          -print0 | xargs -0 clang-format --dry-run --Werror
+      - name: Configure instrumented build
+        env:
+          CC: clang
+          CXX: clang++
+        run: >-
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          -DIMLP_ENABLE_SANITIZERS=ON -DIMLP_BUILD_FUZZER=ON
+      - name: Build with warnings as errors
+        run: cmake --build build --parallel
+      - name: Run clang-tidy static analysis
+        run: clang-tidy -p build --quiet src/*.cpp apps/*.cpp
+      - name: Run deterministic tests
+        run: |
+          mkdir -p reports
+          ctest --test-dir build --output-on-failure --output-junit reports/cpp-tests-linux.xml
+      - name: Run bounded parser fuzz campaign
+        run: ./build/imlp-codec-fuzzer -runs=10000 -max_len=556 -seed=20260916
+      - name: Run simulator demo
+        run: ./build/imlp-cli demo
+      - name: Check generated symbol index
+        run: python3 scripts/generate_symbol_index.py --check
+      - name: Check repository policy
+        run: python3 scripts/check_repository.py
+      - name: Build release benchmark
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -S . -B build-release -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-release --parallel --target imlp-benchmark
+          ./build-release/imlp-benchmark > reports/ci-benchmark.json
+      - name: Upload Linux evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-validation-evidence
+          path: reports/
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-msvc:
+    name: Windows MSVC
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Configure
+        run: cmake -S . -B build -A x64 -DIMLP_BUILD_TESTS=ON
+      - name: Build with warnings as errors
+        run: cmake --build build --config Release --parallel
+      - name: Run deterministic tests
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Run simulator demo
+        run: .\build\Release\imlp-cli.exe demo
+      - name: Check generated symbol index
+        run: python scripts/generate_symbol_index.py --check
+      - name: Check repository policy
+        run: python scripts/check_repository.py

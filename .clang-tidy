@@ -1,0 +1,24 @@
+# @file .clang-tidy
+# @brief Selects high-signal static-analysis rules for protocol-boundary C++ code.
+Checks: >
+  -*,
+  bugprone-assert-side-effect,
+  bugprone-infinite-loop,
+  bugprone-integer-division,
+  bugprone-misplaced-widening-cast,
+  bugprone-narrowing-conversions,
+  bugprone-sizeof-expression,
+  bugprone-suspicious-enum-usage,
+  bugprone-unchecked-optional-access,
+  clang-analyzer-*,
+  performance-*,
+  portability-*,
+  readability-avoid-const-params-in-decls,
+  readability-const-return-type,
+  readability-container-size-empty,
+  readability-duplicate-include,
+  readability-misleading-indentation,
+  readability-redundant-*
+WarningsAsErrors: '*'
+HeaderFilterRegex: '^(include|src|apps|tests|fuzz)/'
+FormatStyle: file

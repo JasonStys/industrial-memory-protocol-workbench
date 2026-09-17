@@ -1,0 +1,13 @@
+# @file .gitignore
+# @brief Excludes generated build products, editor state, and local analysis output.
+
+/build*/
+/out/
+/Testing/
+*.profraw
+*.profdata
+*.sarif
+.cache/
+.idea/
+.vscode/
+
