@@ -99,45 +99,45 @@ See [safety-and-security.md](docs/safety-and-security.md).
 
 ## Validation snapshot
 
-| Evidence | Result |
-| --- | --- |
-| Deterministic C++ tests | 20 passed |
-| Generated valid frame round trips | 10,000 passed |
-| Checksum mutation cases | 2,000 rejected |
-| Arbitrary bounded decoder inputs | 10,000 completed without unstable accepted frames |
-| MSVC configuration | C++20, `/W4 /WX /permissive-` |
-| Linux configuration | Clang, warnings-as-errors, ASan, UBSan, 10,000-run fuzz smoke campaign |
-| Static security analysis | GitHub CodeQL `security-extended` workflow |
-| CI supply-chain policy | Every external action pinned to a full commit SHA |
+| Evidence                          | Result                                                                 |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| Deterministic C++ tests           | 20 passed                                                              |
+| Generated valid frame round trips | 10,000 passed                                                          |
+| Checksum mutation cases           | 2,000 rejected                                                         |
+| Arbitrary bounded decoder inputs  | 10,000 completed without unstable accepted frames                      |
+| MSVC configuration                | C++20, `/W4 /WX /permissive-`                                          |
+| Linux configuration               | Clang, warnings-as-errors, ASan, UBSan, 10,000-run fuzz smoke campaign |
+| Static security analysis          | GitHub CodeQL `security-extended` workflow                             |
+| CI supply-chain policy            | Every external action pinned to a full commit SHA                      |
 
 Exact commands and limitations are in [testing.md](docs/testing.md); checked-in results are in
 [validation-report.md](docs/reports/validation-report.md).
 
 ## CLI summary
 
-| Command | Purpose |
-| --- | --- |
-| `imlp-cli inspect <hex>` | Validate and describe one exact frame. |
-| `imlp-cli encode-read <address> <length>` | Produce a reproducible read test vector. |
-| `imlp-cli read <address> <length>` | Read the local synthetic memory server. |
+| Command                                         | Purpose                                                     |
+| ----------------------------------------------- | ----------------------------------------------------------- |
+| `imlp-cli inspect <hex>`                        | Validate and describe one exact frame.                      |
+| `imlp-cli encode-read <address> <length>`       | Produce a reproducible read test vector.                    |
+| `imlp-cli read <address> <length>`              | Read the local synthetic memory server.                     |
 | `imlp-cli write <address> <hex> --allow-writes` | Perform an explicitly enabled, allowlisted simulated write. |
-| `imlp-cli demo` | Run normal and faulted scenarios with packet traces. |
+| `imlp-cli demo`                                 | Run normal and faulted scenarios with packet traces.        |
 
 See [cli.md](docs/cli.md) for examples and exit codes.
 
 ## Repository map
 
-| Path | Responsibility |
-| --- | --- |
-| `include/imlp/` | Public types, codec, memory, server, transport, and client contracts. |
-| `src/` | Bounded implementations of those contracts. |
-| `apps/cli_main.cpp` | Simulator CLI, inspector, trace display, and safety opt-in. |
-| `apps/benchmark_main.cpp` | Five-sample encode/server/decode throughput benchmark. |
-| `tests/` | Unit, integration, retry-policy, boundary, and property tests. |
-| `fuzz/codec_fuzzer.cpp` | libFuzzer target for decoder and simulator boundaries. |
-| `scripts/` | Bash validation plus Python repository-policy and symbol-index tooling. |
-| `docs/` | Architecture, protocol, security, testing, complexity, ADRs, and reports. |
-| `.github/workflows/` | Cross-platform CI and CodeQL security analysis. |
+| Path                      | Responsibility                                                            |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `include/imlp/`           | Public types, codec, memory, server, transport, and client contracts.     |
+| `src/`                    | Bounded implementations of those contracts.                               |
+| `apps/cli_main.cpp`       | Simulator CLI, inspector, trace display, and safety opt-in.               |
+| `apps/benchmark_main.cpp` | Five-sample encode/server/decode throughput benchmark.                    |
+| `tests/`                  | Unit, integration, retry-policy, boundary, and property tests.            |
+| `fuzz/codec_fuzzer.cpp`   | libFuzzer target for decoder and simulator boundaries.                    |
+| `scripts/`                | Bash validation plus Python repository-policy and symbol-index tooling.   |
+| `docs/`                   | Architecture, protocol, security, testing, complexity, ADRs, and reports. |
+| `.github/workflows/`      | Cross-platform CI and CodeQL security analysis.                           |
 
 [file-reference.md](docs/file-reference.md) describes every maintained file. Source headers point to
 the generated [symbol index](docs/generated/symbol-index.md) for exact declaration locations.
@@ -154,8 +154,8 @@ the generated [symbol index](docs/generated/symbol-index.md) for exact declarati
 - [Known limitations](docs/limitations.md)
 - [Decision records](docs/adr/)
 - [Primary sources](docs/sources.md)
+- [Latest maintenance audit](docs/reports/maintenance-audit-2026-09-18.md)
 
 ## License
 
 [MIT](LICENSE). The protocol design and sample memory map are synthetic educational artifacts.
-
