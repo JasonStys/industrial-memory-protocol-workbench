@@ -84,10 +84,11 @@ This index supplies exact line locations for the classes, functions, tests, and 
 
 ### `scripts/check_repository.py`
 
-- `discover_files` — [line 38](../../scripts/check_repository.py#L38)
-- `is_code_file` — [line 50](../../scripts/check_repository.py#L50)
-- `validate` — [line 55](../../scripts/check_repository.py#L55)
-- `main` — [line 97](../../scripts/check_repository.py#L97)
+- `consistent_codeql_versions` — [line 39](../../scripts/check_repository.py#L39)
+- `discover_files` — [line 45](../../scripts/check_repository.py#L45)
+- `is_code_file` — [line 57](../../scripts/check_repository.py#L57)
+- `validate` — [line 62](../../scripts/check_repository.py#L62)
+- `main` — [line 106](../../scripts/check_repository.py#L106)
 
 ### `scripts/generate_symbol_index.py`
 
@@ -95,6 +96,15 @@ This index supplies exact line locations for the classes, functions, tests, and 
 - `symbols_for` — [line 43](../../scripts/generate_symbol_index.py#L43)
 - `render` — [line 58](../../scripts/generate_symbol_index.py#L58)
 - `main` — [line 83](../../scripts/generate_symbol_index.py#L83)
+
+### `scripts/test_workflow_policy.py`
+
+- `WorkflowPolicyTests` — [line 11](../../scripts/test_workflow_policy.py#L11)
+- `test_paired_immutable_versions` — [line 14](../../scripts/test_workflow_policy.py#L14)
+- `test_mixed_versions` — [line 20](../../scripts/test_workflow_policy.py#L20)
+- `test_mutable_tag` — [line 26](../../scripts/test_workflow_policy.py#L26)
+- `test_without_codeql` — [line 30](../../scripts/test_workflow_policy.py#L30)
+- `test_autobuild_must_match` — [line 34](../../scripts/test_workflow_policy.py#L34)
 
 ### `scripts/validate.sh`
 

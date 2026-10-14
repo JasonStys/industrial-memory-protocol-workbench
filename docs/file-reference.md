@@ -54,6 +54,7 @@
 | --- | --- |
 | `scripts/validate.sh` | Portable configure/build/test/demo/policy workflow. |
 | `scripts/check_repository.py` | Required docs, headers, protected references, and action-pin policy. |
+| `scripts/test_workflow_policy.py` | Five regression cases for coordinated immutable CodeQL versions. |
 | `scripts/generate_symbol_index.py` | Exact declaration-line index generation and freshness check. |
 | `.github/workflows/ci.yml` | Linux sanitizers/fuzzing and Windows MSVC validation. |
 | `.github/workflows/codeql.yml` | Compiled C++ CodeQL analysis. |
@@ -78,6 +79,7 @@
 | `docs/adr/0003-retry-policy.md` | Decision to retry reads but never writes implicitly. |
 | `docs/generated/symbol-index.md` | Generated exact line links for source declarations and tests. |
 | `docs/reports/validation-report.md` | Human-readable environment, results, method, and residual gaps. |
+| `docs/reports/actions-review-2026-10-14.md` | Root cause, prevention and revalidation of the CodeQL version failure. |
 | `reports/test-summary.json` | Machine-readable deterministic/property/demo result counts. |
 | `reports/performance.json` | Machine-readable local release benchmark and scope note. |
 | `reports/repository-validation.json` | Machine-readable documentation/header/action-pin policy result. |

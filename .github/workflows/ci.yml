@@ -50,7 +50,9 @@ jobs:
       - name: Check generated symbol index
         run: python3 scripts/generate_symbol_index.py --check
       - name: Check repository policy
-        run: python3 scripts/check_repository.py
+        run: |
+          python3 scripts/test_workflow_policy.py
+          python3 scripts/check_repository.py
       - name: Build release benchmark
         env:
           CC: clang
@@ -85,4 +87,6 @@ jobs:
       - name: Check generated symbol index
         run: python scripts/generate_symbol_index.py --check
       - name: Check repository policy
-        run: python scripts/check_repository.py
+        run: |
+          python scripts/test_workflow_policy.py
+          python scripts/check_repository.py

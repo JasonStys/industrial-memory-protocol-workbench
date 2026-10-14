@@ -155,6 +155,7 @@ the generated [symbol index](docs/generated/symbol-index.md) for exact declarati
 - [Decision records](docs/adr/)
 - [Primary sources](docs/sources.md)
 - [Latest maintenance audit](docs/reports/maintenance-audit-2026-09-18.md)
+- [Actions configuration review](docs/reports/actions-review-2026-10-14.md)
 
 ## License
 
