@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-SKIPPED_DIRECTORIES = {".git", ".cache", ".idea", ".vscode", "build", "out"}
+SKIPPED_DIRECTORIES = {".git", ".cache", ".idea", ".vscode", "build", "out", "__pycache__"}
 CODE_EXTENSIONS = {".cpp", ".hpp", ".py", ".sh"}
 REQUIRED_DOCS = {
     "README.md",
