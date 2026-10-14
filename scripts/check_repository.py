@@ -33,6 +33,13 @@ REQUIRED_DOCS = {
 PROTECTED_REFERENCE = "".join(("op", "to", " 22"))
 ACTION_PATTERN = re.compile(r"^\s*uses:\s*[^@\s]+@([^\s#]+)", re.MULTILINE)
 FULL_SHA_PATTERN = re.compile(r"^[0-9a-f]{40}$")
+CODEQL_PATTERN = re.compile(r"uses:\s*github/codeql-action/(?:init|analyze|autobuild)@([^\s#]+)")
+
+
+def consistent_codeql_versions(source: str) -> bool:
+    """Require all coordinated CodeQL steps to use one immutable commit."""
+    versions = CODEQL_PATTERN.findall(source)
+    return len(set(versions)) <= 1 and all(FULL_SHA_PATTERN.fullmatch(v) for v in versions)
 
 
 def discover_files() -> list[Path]:
@@ -78,6 +85,8 @@ def validate() -> tuple[list[str], dict[str, object]]:
                 failures.append(f"missing source header: {relative}")
         if relative.startswith(".github/workflows/") and path.suffix in {".yml", ".yaml"}:
             workflow_files += 1
+            if not consistent_codeql_versions(text):
+                failures.append(f"CodeQL steps have inconsistent or mutable versions: {relative}")
             for reference in ACTION_PATTERN.findall(text):
                 if not FULL_SHA_PATTERN.fullmatch(reference):
                     failures.append(f"action is not pinned to a full SHA in {relative}: {reference}")

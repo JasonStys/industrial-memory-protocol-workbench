@@ -10,4 +10,5 @@
 .cache/
 .idea/
 .vscode/
+__pycache__/
 
