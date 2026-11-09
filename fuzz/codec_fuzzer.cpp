@@ -6,6 +6,7 @@
  * docs/generated/symbol-index.md.
  */
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -13,6 +14,7 @@
 
 #include "imlp/codec.hpp"
 #include "imlp/server.hpp"
+#include "imlp/stream_decoder.hpp"
 
 /** Assert that every accepted frame has a stable encode/decode representation.
  */
@@ -28,6 +30,22 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, const std::size_
       std::abort();
     }
   }
+  imlp::StreamDecoder stream;
+  const std::size_t split = size / 2;
+  const auto first = stream.feed(bytes.first(split));
+  const auto second = stream.feed(bytes.subspan(split));
+  for (const auto* batch : {&first, &second}) {
+    for (const auto& frame : batch->frames) {
+      const auto encoded = imlp::encode(frame.frame);
+      if (!encoded || frame.offset > size || frame.wire_bytes > size - frame.offset ||
+          encoded.bytes.size() != frame.wire_bytes ||
+          !std::equal(encoded.bytes.begin(), encoded.bytes.end(),
+                      bytes.begin() + static_cast<std::ptrdiff_t>(frame.offset)))
+        std::abort();
+    }
+  }
+  if (stream.pending_bytes() >= imlp::maximum_frame_size) std::abort();
+  static_cast<void>(stream.finish());
   imlp::MemoryServer server;
   static_cast<void>(server.handle(bytes));
   return 0;

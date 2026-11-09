@@ -18,6 +18,7 @@
 | File | Responsibility |
 | --- | --- |
 | `include/imlp/types.hpp` | Protocol constants, fixed-width enums, frame, and codec result types. |
+| `include/imlp/stream_decoder.hpp` | Fixed-ring fragmented-stream, offsets and diagnostic resource contracts. |
 | `include/imlp/codec.hpp` | Codec, CRC-32, and hexadecimal conversion API. |
 | `include/imlp/memory_map.hpp` | Fixed memory map and access-region contract. |
 | `include/imlp/server.hpp` | Simulator policy, observable event, and request handler API. |
@@ -28,6 +29,7 @@
 
 | File | Responsibility |
 | --- | --- |
+| `src/stream_decoder.cpp` | Bounded stream reassembly/resynchronization using the original exact codec. |
 | `src/codec.cpp` | Explicit endian conversion, semantic validation, CRC, and hex implementation. |
 | `src/memory_map.cpp` | Overflow-safe range checks, initial identity data, reads, and writes. |
 | `src/server.cpp` | Request dispatch, write policy, memory access, and bounded responses. |
@@ -83,3 +85,12 @@
 | `reports/test-summary.json` | Machine-readable deterministic/property/demo result counts. |
 | `reports/performance.json` | Machine-readable local release benchmark and scope note. |
 | `reports/repository-validation.json` | Machine-readable documentation/header/action-pin policy result. |
+
+## Stream workflow additions
+
+| File | Responsibility |
+| --- | --- |
+| `tests/test_stream.cpp` | All split points, byte feeds, coalescing, corruption offsets, malformed length, EOF, diagnostic/lifetime caps. |
+| `tests/test_stream_cli.py` | Independent Python struct/zlib golden-wire actual CLI integration, automatically run by CTest. |
+| `docs/stream-inspection.md` | Decoder lifecycle, replay commands, bounds and resynchronization limitations. |
+| `docs/reports/stream-2026-11-09.md` | Actual local native validation evidence and remaining hosted gates. |

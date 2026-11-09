@@ -11,17 +11,18 @@ This index supplies exact line locations for the classes, functions, tests, and 
 
 ### `apps/cli_main.cpp`
 
-- `print_usage` — [line 27](../../apps/cli_main.cpp#L27)
-- `parse_u32` — [line 38](../../apps/cli_main.cpp#L38)
-- `status_name` — [line 50](../../apps/cli_main.cpp#L50)
-- `print_result` — [line 69](../../apps/cli_main.cpp#L69)
-- `print_trace` — [line 79](../../apps/cli_main.cpp#L79)
-- `run_inspect` — [line 88](../../apps/cli_main.cpp#L88)
-- `run_encode_read` — [line 110](../../apps/cli_main.cpp#L110)
-- `run_read` — [line 137](../../apps/cli_main.cpp#L137)
-- `run_write` — [line 156](../../apps/cli_main.cpp#L156)
-- `run_demo` — [line 177](../../apps/cli_main.cpp#L177)
-- `main` — [line 208](../../apps/cli_main.cpp#L208)
+- `print_usage` — [line 28](../../apps/cli_main.cpp#L28)
+- `parse_u32` — [line 40](../../apps/cli_main.cpp#L40)
+- `status_name` — [line 52](../../apps/cli_main.cpp#L52)
+- `print_result` — [line 71](../../apps/cli_main.cpp#L71)
+- `print_trace` — [line 81](../../apps/cli_main.cpp#L81)
+- `run_inspect` — [line 90](../../apps/cli_main.cpp#L90)
+- `run_encode_read` — [line 112](../../apps/cli_main.cpp#L112)
+- `run_stream` — [line 140](../../apps/cli_main.cpp#L140)
+- `run_read` — [line 197](../../apps/cli_main.cpp#L197)
+- `run_write` — [line 216](../../apps/cli_main.cpp#L216)
+- `run_demo` — [line 237](../../apps/cli_main.cpp#L237)
+- `main` — [line 268](../../apps/cli_main.cpp#L268)
 
 ### `CMakeLists.txt`
 
@@ -30,7 +31,7 @@ This index supplies exact line locations for the classes, functions, tests, and 
 
 ### `fuzz/codec_fuzzer.cpp`
 
-- `LLVMFuzzerTestOneInput` — [line 19](../../fuzz/codec_fuzzer.cpp#L19)
+- `LLVMFuzzerTestOneInput` — [line 21](../../fuzz/codec_fuzzer.cpp#L21)
 
 ### `include/imlp/client.hpp`
 
@@ -62,6 +63,13 @@ This index supplies exact line locations for the classes, functions, tests, and 
 - `ServerEvent` — [line 29](../../include/imlp/server.hpp#L29)
 - `HandleResult` — [line 38](../../include/imlp/server.hpp#L38)
 - `MemoryServer` — [line 45](../../include/imlp/server.hpp#L45)
+
+### `include/imlp/stream_decoder.hpp`
+
+- `StreamFrame` — [line 24](../../include/imlp/stream_decoder.hpp#L24)
+- `StreamIssue` — [line 32](../../include/imlp/stream_decoder.hpp#L32)
+- `StreamBatch` — [line 40](../../include/imlp/stream_decoder.hpp#L40)
+- `StreamDecoder` — [line 50](../../include/imlp/stream_decoder.hpp#L50)
 
 ### `include/imlp/transport.hpp`
 
@@ -151,6 +159,15 @@ This index supplies exact line locations for the classes, functions, tests, and 
 - `MemoryServer::write_is_allowed` — [line 78](../../src/server.cpp#L78)
 - `MemoryServer::make_response` — [line 87](../../src/server.cpp#L87)
 
+### `src/stream_decoder.cpp`
+
+- `StreamDecoder::prefix` — [line 14](../../src/stream_decoder.cpp#L14)
+- `StreamDecoder::consume` — [line 23](../../src/stream_decoder.cpp#L23)
+- `StreamDecoder::issue` — [line 30](../../src/stream_decoder.cpp#L30)
+- `StreamDecoder::drain` — [line 43](../../src/stream_decoder.cpp#L43)
+- `StreamDecoder::feed` — [line 79](../../src/stream_decoder.cpp#L79)
+- `StreamDecoder::finish` — [line 95](../../src/stream_decoder.cpp#L95)
+
 ### `src/transport.cpp`
 
 - `LoopbackTransport::connect` — [line 19](../../src/transport.cpp#L19)
@@ -211,3 +228,19 @@ This index supplies exact line locations for the classes, functions, tests, and 
 - `generated_valid_frames_round_trip_exactly` — [line 65](../../tests/test_properties.cpp#L65)
 - `checksum_mutation_is_always_detected` — [line 77](../../tests/test_properties.cpp#L77)
 - `arbitrary_bounded_input_never_produces_an_unstable_frame` — [line 88](../../tests/test_properties.cpp#L88)
+
+### `tests/test_stream.cpp`
+
+- `maximum_frame` — [line 18](../../tests/test_stream.cpp#L18)
+- `stream_all_split_positions_and_byte_feeds_preserve_exact_frames` — [line 26](../../tests/test_stream.cpp#L26)
+- `stream_coalesced_frames_junk_and_crc_recovery_have_exact_offsets` — [line 53](../../tests/test_stream.cpp#L53)
+- `stream_malformed_length_recovers_but_incomplete_eof_never_invents_a_frame` — [line 72](../../tests/test_stream.cpp#L72)
+
+### `tests/test_stream_cli.py`
+
+- `wire` — [line 20](../../tests/test_stream_cli.py#L20)
+- `invoke` — [line 26](../../tests/test_stream_cli.py#L26)
+- `StreamCliTests` — [line 33](../../tests/test_stream_cli.py#L33)
+- `test_fragment_and_coalesced_golden` — [line 36](../../tests/test_stream_cli.py#L36)
+- `test_corruption_recovery_and_partial_eof` — [line 47](../../tests/test_stream_cli.py#L47)
+- `test_invalid_inputs_fail_before_output` — [line 56](../../tests/test_stream_cli.py#L56)

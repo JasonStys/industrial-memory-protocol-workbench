@@ -67,6 +67,14 @@ because the synthetic protocol has no authentication field.
 - Windows MSVC warnings-as-errors build and GitHub CodeQL security analysis
 - Release benchmark with checked-in evidence and CI-generated evidence artifacts
 
+## Inspect fragmented synthetic streams
+
+`imlp-cli stream-inspect <chunk-hex> [chunk-hex ...]` emits one metadata-only JSON review with exact frame/discard offsets, error categories, payload lengths and omitted-diagnostic counts. Each CLI chunk uses the existing strict278-byte hex limit; up to256 chunks/64KiB total are accepted. The C++ `StreamDecoder` API accepts4096-byte feeds while retaining at most278 pending bytes. CMake tests now require Python3 for the independent actual-CLI wire/CRC oracle; the application library still has no external runtime dependency.
+
+The inspector preserves split/coalesced frames, handles overlapping magic prefixes, validates headers/lengths before waiting for payload and reports partial EOF. It uses the original exact codec, leaving client/server admission and explicit write opt-in unchanged. It never connects to or writes a device. Recovery is diagnostic: CRC is not authentication, and a candidate found inside corrupt bytes is not a proven authentic message boundary. A plausible incomplete length waits for more bytes; EOF reports truncation without speculative recovery behind that incomplete candidate.
+
+Adjacent discarded bytes are coalesced, diagnostics are capped at256, and omitted record **and byte** totals remain explicit. Valid frames are retained independently. Oversized/closed feed calls reject before consuming bytes. See [stream workflow](docs/stream-inspection.md) and [validation](docs/reports/stream-2026-11-09.md).
+
 ## Architecture
 
 ```mermaid
