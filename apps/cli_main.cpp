@@ -18,6 +18,7 @@
 
 #include "imlp/client.hpp"
 #include "imlp/codec.hpp"
+#include "imlp/stream_decoder.hpp"
 
 namespace {
 
@@ -28,6 +29,7 @@ void print_usage() {
   std::cout << "Industrial Memory Protocol Workbench (synthetic simulator only)\n"
                "usage:\n"
                "  imlp-cli inspect <frame-hex>\n"
+               "  imlp-cli stream-inspect <chunk-hex> [chunk-hex ...]\n"
                "  imlp-cli encode-read <address> <length>\n"
                "  imlp-cli read <address> <length>\n"
                "  imlp-cli write <address> <payload-hex> --allow-writes\n"
@@ -133,6 +135,64 @@ void print_trace(const std::span<const imlp::TraceRecord> trace) {
   return 0;
 }
 
+/** Inspect bounded explicit synthetic hex chunks as JSON; no server, writes, file/packet transport
+ * is invoked. */
+[[nodiscard]] int run_stream(const int argc, const char* const argv[]) {
+  if (argc > 258) return 2;
+  std::vector<std::vector<std::byte>> chunks;
+  std::size_t total = 0;
+  for (int index = 2; index < argc; ++index) {
+    const auto bytes = imlp::bytes_from_hex(argv[index]);
+    if (!bytes.has_value() || bytes->size() > imlp::maximum_stream_bytes - total) {
+      std::cerr << "error=invalid_or_oversized_stream_hex\n";
+      return 2;
+    }
+    total += bytes->size();
+    chunks.push_back(*bytes);
+  }
+  imlp::StreamDecoder decoder;
+  imlp::StreamBatch combined;
+  const auto retain = [&combined](imlp::StreamBatch batch) {
+    combined.frames.insert(combined.frames.end(), batch.frames.begin(), batch.frames.end());
+    combined.omitted_issue_records += batch.omitted_issue_records;
+    combined.omitted_issue_bytes += batch.omitted_issue_bytes;
+    for (const auto& issue : batch.issues) {
+      if (combined.issues.size() < imlp::maximum_stream_issues)
+        combined.issues.push_back(issue);
+      else {
+        ++combined.omitted_issue_records;
+        combined.omitted_issue_bytes += issue.bytes;
+      }
+    }
+  };
+  for (const auto& chunk : chunks) retain(decoder.feed(chunk));
+  retain(decoder.finish());
+  std::cout << "{\"schema\":\"imlp-stream-v1\",\"author\":\"Jason Stys\",\"input_bytes\":" << total
+            << ",\"frames\":[";
+  for (std::size_t index = 0; index < combined.frames.size(); ++index) {
+    const auto& frame = combined.frames[index];
+    if (index != 0) std::cout << ',';
+    std::cout << "{\"offset\":" << frame.offset << ",\"wire_bytes\":" << frame.wire_bytes
+              << ",\"request_id\":" << frame.frame.request_id
+              << ",\"opcode\":" << static_cast<unsigned int>(frame.frame.opcode)
+              << ",\"payload_bytes\":" << frame.frame.payload.size() << '}';
+  }
+  std::cout << "],\"issues\":[";
+  for (std::size_t index = 0; index < combined.issues.size(); ++index) {
+    const auto& issue = combined.issues[index];
+    if (index != 0) std::cout << ',';
+    std::cout << "{\"offset\":" << issue.offset << ",\"discarded_bytes\":" << issue.bytes
+              << ",\"error\":\"" << imlp::codec_error_name(issue.error) << "\"}";
+  }
+  std::cout << "],\"omitted_issue_records\":" << combined.omitted_issue_records
+            << ",\"omitted_issue_bytes\":" << combined.omitted_issue_bytes
+            << ",\"notice\":\"Synthetic offline diagnostic only; CRC is not authentication. "
+               "Recovery may find embedded valid candidates. Incomplete candidates wait for data "
+               "and are reported at EOF; no speculative recovery behind incomplete lengths. No "
+               "device or write operation executes.\"}\n";
+  return 0;
+}
+
 /** Run a simulated read using default read-only server policy. */
 [[nodiscard]] int run_read(const std::string_view address_text,
                            const std::string_view length_text) {
@@ -211,6 +271,7 @@ int main(const int argc, const char* const argv[]) {
     return 1;
   }
   const std::string_view command = argv[1];
+  if (command == "stream-inspect" && argc >= 3) return run_stream(argc, argv);
   if (command == "inspect" && argc == 3) return run_inspect(argv[2]);
   if (command == "encode-read" && argc == 4) return run_encode_read(argv[2], argv[3]);
   if (command == "read" && argc == 4) return run_read(argv[2], argv[3]);

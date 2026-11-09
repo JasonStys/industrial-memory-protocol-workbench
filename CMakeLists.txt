@@ -50,6 +50,7 @@ add_library(
   src/client.cpp
   src/codec.cpp
   src/memory_map.cpp
+  src/stream_decoder.cpp
   src/server.cpp
   src/transport.cpp)
 target_include_directories(
@@ -74,6 +75,7 @@ if(IMLP_BUILD_TESTS)
   include(CTest)
   add_executable(
     imlp-tests
+    tests/test_stream.cpp
     tests/test_client.cpp
     tests/test_codec.cpp
     tests/test_main.cpp
@@ -83,6 +85,8 @@ if(IMLP_BUILD_TESTS)
   imlp_set_warnings(imlp-tests)
   imlp_enable_instrumentation(imlp-tests)
   add_test(NAME imlp-tests COMMAND imlp-tests)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_test(NAME stream-cli COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_stream_cli.py $<TARGET_FILE:imlp-cli>)
 endif()
 
 if(IMLP_BUILD_FUZZER)
