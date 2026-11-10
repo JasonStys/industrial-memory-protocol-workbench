@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "project": "industrial-memory-protocol-workbench",
+  "author": "Jason Stys",
+  "editionDate": "2026-11-09",
+  "sourceBaseline": "d4a8492365890c588b846b092d8dd6a691212118",
+  "sourceUrl": "https://github.com/JasonStys/industrial-memory-protocol-workbench/tree/d4a8492365890c588b846b092d8dd6a691212118",
+  "functionalEvidenceBaseline": "d4a8492365890c588b846b092d8dd6a691212118",
+  "evidenceObservedAt": "2026-11-10T05:25:40.628667+00:00",
+  "workflowEvidence": [
+    {
+      "conclusion": "success",
+      "databaseId": 42718242191,
+      "event": "push",
+      "headSha": "d4a8492365890c588b846b092d8dd6a691212118",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/JasonStys/industrial-memory-protocol-workbench/actions/runs/42718242191"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 42718242194,
+      "event": "push",
+      "headSha": "d4a8492365890c588b846b092d8dd6a691212118",
+      "name": "CodeQL",
+      "status": "completed",
+      "url": "https://github.com/JasonStys/industrial-memory-protocol-workbench/actions/runs/42718242194"
+    }
+  ],
+  "summary": "Reassemble fragmented/coalesced frames in a bounded ring with corruption, discarded-byte and EOF offsets plus read-only JSON inspection.",
+  "rationale": "Models realistic stream transport boundaries instead of assuming one read equals one complete message.",
+  "limitations": [
+    "Synthetic diagnostic stream inspection, not physical or network device transport.",
+    "CRC and recovered frame boundaries are not authentication. Plausible incomplete candidates can remain pending until EOF reports truncation.",
+    "Existing client/server and write opt-in boundaries remain; recovery does not authorize writes to a device."
+  ],
+  "documents": [
+    {
+      "filename": "project-guide.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "bytes": 45289,
+      "sha256": "62d2f72d30388538d6f0f61dff7f3ab1dcaca5fa5df48eac82db0ae06bf7e751",
+      "sourceBaseline": "d4a8492365890c588b846b092d8dd6a691212118",
+      "visualReview": {
+        "approved": true,
+        "method": "Every rendered page individually viewed at readable original resolution",
+        "pageCount": 6,
+        "renderedPageSha256": {
+          "page-1.png": "e0bbe829eae45c469daafabe46abbc7403bb397a8402b84fa7c378ba5258f3d3",
+          "page-2.png": "e1a040eb75c1621ae8f080cf357925859bde296e494f65d33b43e383b7fcee87",
+          "page-3.png": "94bdaf9e17a91c0e3338b418af564f44a22d15837aee229e133e9ca8328b0ccd",
+          "page-4.png": "96f333d3af6a79e489747f94d36dcc9f2fc1de47252ea543c58436df9d4acb91",
+          "page-5.png": "b210debb54bab0d4fb35519bf10d8a79fe70824c86fd41c642ca10d4214533af",
+          "page-6.png": "174fb56206db5e92d3bce0c7167ead78eede04ae1867db1dd17b575cf91762a6"
+        }
+      }
+    }
+  ],
+  "scope": "Reviewed documentation editions of the cited source. Checksums identify bytes, not authorship. Historical measurements retain their own dates; integration CI must be checked separately."
+}
