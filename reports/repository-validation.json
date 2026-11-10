@@ -1,8 +1,8 @@
 {
   "status": "passed",
-  "files_checked": 64,
+  "files_checked": 69,
   "source_files_with_required_headers": 29,
-  "markdown_files": 24,
+  "markdown_files": 26,
   "workflow_files_with_immutable_action_pins": 2,
   "required_documentation_files": 14,
   "failures": []
