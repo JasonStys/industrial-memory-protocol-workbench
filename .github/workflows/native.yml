@@ -1,0 +1,82 @@
+# @file native.yml
+# @brief Validate the actual desktop sources and extracted Windows app without publishing binaries.
+name: Native application validation
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source:
+    name: Native source / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: { python-version: "3.14.10", check-latest: true }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: { node-version: "24", package-manager-cache: false }
+      - run: python -m pip install --require-hashes -r requirements-dev.lock -r requirements-package.lock
+      - run: npm --prefix web ci --ignore-scripts
+      - run: npm --prefix web test
+      - run: npm --prefix web audit --audit-level=low
+      - name: Build the actual original C++ engine and independent CTest contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake -S . -B .runtime/cpp-app -DCMAKE_BUILD_TYPE=Release
+          cmake --build .runtime/cpp-app --config Release --parallel
+          ctest --test-dir .runtime/cpp-app -C Release --output-on-failure
+      - name: Actual owned HTTP, C++, SQLite and Tk contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            command -v xvfb-run
+            xvfb-run -a python -m pytest -q --cov=imlp_studio --cov-report=term-missing
+          else
+            python -m pytest -q --cov=imlp_studio --cov-report=term-missing
+          fi
+      - name: Source style and exact symbol locations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m ruff check imlp_studio tools tests scripts
+          python -m ruff format --check imlp_studio tools tests scripts
+          python scripts/generate_symbol_index.py --check
+          python scripts/test_workflow_policy.py
+          python scripts/check_repository.py
+      - run: python -m pip_audit --require-hashes -r requirements-dev.lock -r requirements-package.lock --disable-pip
+  portable:
+    name: Extracted Windows application
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: { python-version: "3.14.10", check-latest: true }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: { node-version: "24", package-manager-cache: false }
+      - run: python -m pip install --require-hashes -r requirements-dev.lock -r requirements-package.lock
+      - run: npm --prefix web ci --ignore-scripts
+      - run: npm --prefix web run build
+      - name: Install the exact locked browser
+        timeout-minutes: 5
+        run: npm --prefix web exec -- playwright install chromium
+      - name: Verify actual locked browser host requirements
+        timeout-minutes: 2
+        run: npm --prefix web run check:browser-host
+      - name: Build ZIP, safely extract and use the actual complete application
+        run: python -m tools.package_app --output-root .runtime/native-ci

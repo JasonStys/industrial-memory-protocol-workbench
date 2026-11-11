@@ -1,0 +1,355 @@
+<!doctype html>
+<!-- @file index.html @brief Genuine offline C++ protocol workbench by Jason Stys. Symbol locations: docs/generated/symbol-index.md. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Synthetic protocol sessions, exact wire frames and fragmented stream evidence"
+    />
+    <title>Industrial Memory Protocol Workbench | Jason Stys</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script type="module" src="/assets/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">Jason Stys · Offline engineering evidence</p>
+      <h1>Industrial Memory Protocol Workbench</h1>
+      <p>
+        Run the original C++20 client, memory server, codec and fragmented
+        stream decoder on your own bounded synthetic inputs.
+      </p>
+      <p id="identity">Opening the owned native application…</p>
+    </header>
+    <main>
+      <p class="notice">
+        Simulation only. IMLP/1 is fictional; there is no live device, network
+        endpoint, physical I/O or commercial protocol compatibility. CRC detects
+        corruption, not sender identity. A lost write acknowledgement does not
+        prove that memory stayed unchanged.
+      </p>
+      <p id="status" role="status" aria-live="polite">
+        Open through the native owner window.
+      </p>
+      <section aria-labelledby="editor-heading">
+        <h2 id="editor-heading">Configure an experiment</h2>
+        <div class="grid">
+          <label
+            >Record title<input
+              id="title"
+              data-edit
+              value="Custom protocol inspection"
+              maxlength="100" /></label
+          ><label
+            >Workflow<select id="workflow" data-edit>
+              <option value="session">Stateful client/server session</option>
+              <option value="stream">Fragmented stream review</option>
+              <option value="inspect">Inspect exact frame</option>
+              <option value="compose">Compose a frame</option>
+            </select></label
+          >
+        </div>
+        <div class="toolbar">
+          <label
+            >Editable starting input<select id="example" data-edit>
+              <option value="healthy">Write then read exact bytes</option>
+              <option value="lost-ack">Corrupt write acknowledgement</option>
+              <option value="compose">Compose a custom frame</option>
+              <option value="truncated">Inspect truncated frame</option>
+              <option value="empty-stream">Review an empty stream</option>
+            </select></label
+          ><button id="load-example" data-edit>Load starting input</button>
+        </div>
+        <fieldset id="session-fields">
+          <legend>One persistent simulated server per run</legend>
+          <div class="grid">
+            <label
+              >Simulated writes<select id="writes" data-edit>
+                <option value="true">Enabled inside explicit allowlist</option>
+                <option value="false">Disabled</option>
+              </select></label
+            ><label
+              >Write allowlist beginning<input
+                id="allow-begin"
+                value="0x100"
+                data-edit /></label
+            ><label
+              >Write allowlist end (inclusive)<input
+                id="allow-end"
+                value="0x7ff"
+                data-edit /></label
+            ><label
+              >Read attempts (1–3)<input
+                id="attempts"
+                type="number"
+                min="1"
+                max="3"
+                value="2"
+                data-edit
+            /></label>
+          </div>
+          <p>
+            Readable map: 0x000–0x7ff; 0x000–0x0ff is read-only. The original
+            server enforces its own permissions beneath these controls. Writes
+            never retry automatically; unconsumed loopback faults carry to later
+            operations.
+          </p>
+          <label
+            >Ordered operations JSON<textarea
+              id="operations"
+              rows="10"
+              spellcheck="false"
+              data-edit
+            ></textarea>
+          </label>
+          <details>
+            <summary>Add an operation</summary>
+            <div class="grid">
+              <label
+                >Verb<select id="op-verb" data-edit>
+                  <option value="read">Read</option>
+                  <option value="write">Write</option>
+                </select></label
+              ><label
+                >Address<input id="op-address" value="0x100" data-edit /></label
+              ><label
+                >Read byte count<input
+                  id="op-length"
+                  value="6"
+                  data-edit /></label
+              ><label
+                >Write payload hexadecimal<input
+                  id="op-payload"
+                  value="1a0d0a007fff"
+                  data-edit /></label
+              ><label
+                >Logical deadline in milliseconds<input
+                  id="op-deadline"
+                  value="25"
+                  data-edit /></label
+              ><label
+                >Optional loopback fault<select id="op-fault" data-edit>
+                  <option value="">None</option>
+                  <option value="timeout">Timeout</option>
+                  <option value="disconnect">Disconnect</option>
+                  <option value="truncate_response">Truncate response</option>
+                  <option value="corrupt_response">Corrupt response</option>
+                  <option value="wrong_request_id">Wrong request ID</option>
+                </select></label
+              >
+            </div>
+            <button id="append-operation" data-edit>Append operation</button>
+          </details>
+        </fieldset>
+        <fieldset id="stream-fields" hidden>
+          <legend>Fragmented input</legend>
+          <p>
+            Use 1–256 ordered chunks, at most 4096 bytes each and 64 KiB
+            overall. JSON [""] represents an empty stream. Original EOF/discard
+            offsets remain visible.
+          </p>
+          <label
+            >Chunks as JSON array of hexadecimal strings<textarea
+              id="chunks"
+              rows="8"
+              data-edit
+              spellcheck="false"
+            >
+[""]</textarea></label
+          ><label
+            >Load raw stream (split into exact 4096-byte chunks)<input
+              id="stream-file"
+              type="file"
+              data-edit
+          /></label>
+        </fieldset>
+        <fieldset id="inspect-fields" hidden>
+          <legend>Exact-frame input</legend>
+          <label
+            >Frame hexadecimal<textarea
+              id="frame"
+              rows="5"
+              data-edit
+              spellcheck="false"
+            >
+494d01</textarea></label
+          ><label
+            >Load exact raw frame (0–278 bytes)<input
+              id="frame-file"
+              type="file"
+              data-edit
+          /></label>
+        </fieldset>
+        <fieldset id="compose-fields" hidden>
+          <legend>Original codec fields</legend>
+          <p>
+            Deliberately unsupported versions, flags or semantics produce a
+            blocked result, never a falsely accepted frame.
+          </p>
+          <div class="grid">
+            <label
+              >Version<input id="frame-version" value="1" data-edit /></label
+            ><label>Opcode<input id="opcode" value="2" data-edit /></label
+            ><label>Flags<input id="flags" value="0" data-edit /></label
+            ><label
+              >Request ID<input id="request-id" value="7" data-edit /></label
+            ><label>Address<input id="address" value="0x100" data-edit /></label
+            ><label
+              >Status<input id="remote-status" value="0" data-edit
+            /></label>
+          </div>
+          <label
+            >Payload hexadecimal<textarea
+              id="payload"
+              rows="3"
+              data-edit
+              spellcheck="false"
+            >
+1a0d0a007fff</textarea>
+          </label>
+        </fieldset>
+        <div class="toolbar">
+          <button id="run" class="primary" data-edit>
+            Run original C++ engines</button
+          ><button id="export-input" data-edit>Download current input</button>
+        </div>
+        <div class="grid">
+          <label
+            >Import supported input JSON<input
+              id="input-file"
+              type="file"
+              accept=".json,application/json"
+              data-edit /></label
+          ><label
+            >Import exported evidence and rerun its input<input
+              id="evidence-file"
+              type="file"
+              accept=".json,application/json"
+              data-edit
+          /></label>
+        </div>
+      </section>
+      <section aria-labelledby="result-heading">
+        <h2 id="result-heading">Inspect actual evidence</h2>
+        <p id="selected">No saved experiment selected.</p>
+        <div id="summary"></div>
+        <div
+          class="scroll"
+          role="region"
+          aria-label="Protocol result table"
+          tabindex="0"
+        >
+          <table>
+            <caption id="table-caption">
+              Run or select a saved experiment.
+            </caption>
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <details>
+          <summary>Whole memory and wire trace</summary>
+          <pre
+            id="trace"
+            tabindex="0"
+            role="region"
+            aria-label="Memory and wire trace"
+          >
+No trace yet.</pre>
+        </details>
+        <div class="toolbar">
+          <button id="export-evidence" disabled>
+            Download complete evidence</button
+          ><label
+            >Accepted stream frame index<input
+              id="frame-index"
+              type="number"
+              min="0"
+              value="0" /></label
+          ><button id="export-frame" disabled>
+            Download selected raw frame</button
+          ><button id="delete" disabled>Delete selected saved record</button>
+        </div>
+        <details>
+          <summary>Complete input, engine identity and result JSON</summary>
+          <pre
+            id="evidence"
+            tabindex="0"
+            role="region"
+            aria-label="Complete experiment evidence"
+          >
+No evidence yet.</pre>
+        </details>
+      </section>
+      <section aria-labelledby="history-heading">
+        <h2 id="history-heading">Retained workspace history</h2>
+        <p>
+          Inputs and exact results are local plaintext under your OS account.
+          Export before deleting. Capacity is 1000 records / 100 MiB; earlier
+          evidence is never silently pruned.
+        </p>
+        <div class="toolbar">
+          <label
+            >Literal title search<input id="search" maxlength="100" /></label
+          ><label
+            >Workflow filter<select id="history-kind">
+              <option value="">All workflows</option>
+              <option value="session">Session</option>
+              <option value="stream">Stream</option>
+              <option value="inspect">Inspect</option>
+              <option value="compose">Compose</option>
+            </select></label
+          ><button id="refresh">Apply search</button>
+        </div>
+        <p id="history-total">No history loaded.</p>
+        <ul id="history"></ul>
+        <div class="toolbar">
+          <button id="previous" disabled>Previous 25</button
+          ><button id="next" disabled>Next 25</button>
+        </div>
+      </section>
+      <details>
+        <summary>Help, interpretation and limits</summary>
+        <p>
+          Choose a workflow, edit every relevant parameter or import your
+          supported local file, then run. The C++ engines decide outcomes; the
+          application checks their source, request fingerprint, exact wire CRC
+          and byte accounting before retaining evidence. A completed run is a
+          simulated observation, not permission to control a device.
+        </p>
+        <p>
+          Session rows show the actual affected bytes before and after each
+          operation. A corrupt write response can follow a successful memory
+          mutation; review the subsequent read and trace. Read retries reuse the
+          logical request ID; write retries require another explicit operation.
+        </p>
+        <p>
+          Stream offsets are zero-based byte offsets in concatenated input;
+          known discarded extents, accepted frames and omitted-issue byte totals
+          account for the complete stream, including EOF. Empty input is
+          reviewed, not invented as a valid frame.
+        </p>
+        <p>
+          Exported evidence includes exact input and engine identity. Reimport
+          reruns input with the actual current engine and ignores supplied
+          result claims. Raw-frame export includes only an accepted selected
+          frame. Back up the stopped workspace outside this installation. There
+          are no remote accounts, cloud uploads, third-party ads or telemetry.
+        </p>
+      </details>
+      <button id="quit">Exit owned application</button>
+    </main>
+    <footer>
+      Created by Jason Stys ·
+      <a
+        href="https://github.com/JasonStys/industrial-memory-protocol-workbench"
+        target="_blank"
+        rel="noreferrer"
+        >Source, issues and contact</a
+      >
+      · Version 1.1.0 · Educational offline simulation; not industrial control
+      software.
+    </footer>
+  </body>
+</html>

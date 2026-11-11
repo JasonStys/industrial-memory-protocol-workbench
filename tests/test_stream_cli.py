@@ -1,6 +1,6 @@
 """
 @file test_stream_cli.py
-@brief Exercises the actual synthetic CLI with independent Python struct/CRC golden bytes. Created by Jason Stys.
+@brief Actual synthetic CLI with independent Python struct/CRC golden bytes. Created by Jason Stys.
 @details Exact test/helper/variable locations are indexed in docs/generated/symbol-index.md.
 """
 
@@ -24,17 +24,21 @@ def wire() -> bytes:
 
 
 def invoke(*chunks: str) -> subprocess.CompletedProcess[str]:
-    """Run only CMake's trusted synthetic CLI target; no target address/device/source/plugin is accepted."""
+    """Run only CMake's trusted synthetic CLI; no address/device/source/plugin is accepted."""
     return subprocess.run(
-        [str(BINARY), "stream-inspect", *chunks], text=True, capture_output=True, timeout=5, check=False
+        [str(BINARY), "stream-inspect", *chunks],
+        text=True,
+        capture_output=True,
+        timeout=5,
+        check=False,
     )
 
 
 class StreamCliTests(unittest.TestCase):
-    """Actual process/status/JSON contracts distinguish valid streams, corruption, EOF and invalid input."""
+    """Actual JSON contracts distinguish valid streams, corruption, EOF and invalid input."""
 
     def test_fragment_and_coalesced_golden(self) -> None:
-        """The independent golden frame decodes at exact offsets across fragmented and combined chunks."""
+        """Golden frames decode at exact offsets across fragmented and combined chunks."""
         data = wire()
         completed = invoke(data[:1].hex(), (data[1:] + data).hex())
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -45,13 +49,16 @@ class StreamCliTests(unittest.TestCase):
         self.assertEqual(result["issues"], [])
 
     def test_corruption_recovery_and_partial_eof(self) -> None:
-        """CRC corruption is reported, not accepted; a following valid frame and truncated EOF stay distinct."""
+        """CRC corruption, a following valid frame and truncated EOF stay distinct."""
         data = wire()
         bad = data[:-1] + bytes([data[-1] ^ 1])
         result = json.loads(invoke((b"\0" + bad + data + b"IM").hex()).stdout)
         self.assertEqual([row["offset"] for row in result["frames"]], [1 + len(data)])
         self.assertTrue(any(row["error"] == "checksum_mismatch" for row in result["issues"]))
-        self.assertEqual(result["issues"][-1], {"offset": 1 + 2 * len(data), "discarded_bytes": 2, "error": "truncated"})
+        self.assertEqual(
+            result["issues"][-1],
+            {"offset": 1 + 2 * len(data), "discarded_bytes": 2, "error": "truncated"},
+        )
 
     def test_invalid_inputs_fail_before_output(self) -> None:
         """Invalid/oversized/too-many chunks do not emit a misleading partial JSON review."""

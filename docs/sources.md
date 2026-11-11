@@ -35,3 +35,16 @@ protocol is original to this repository.
 Sources were reviewed on 2026-09-16. The workflow pins action implementations to full commit SHAs,
 while this list uses stable documentation URLs so readers can check current guidance.
 
+## Native application review 11 November 2026
+
+- [GitHub compiled-language CodeQL configuration](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/codeql-for-compiled-languages)
+  supports retaining the real manual C++ build while adding other supported source-language lanes.
+- [PyInstaller common issues and pitfalls](https://pyinstaller.org/en/stable/common-issues-and-pitfalls.html)
+  documents portable archive links and the distinct external-program loader environment. The
+  reviewed native distribution here is Windows-only; other-platform source tests are not package proof.
+- [Python socketserver ownership](https://docs.python.org/3.14/library/socketserver.html)
+  describes server shutdown, thread ownership and blocking close. Actual held-work tests independently
+  verify that this application's owner does not release the workspace before its handlers finish.
+- [GitHub workflow shell exit behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#exit-codes-and-error-action-preference)
+  documents the PowerShell last-exit-code wrapper and explicit Bash pipeline fail-fast behavior;
+  compound quality commands select the latter on all three source-validation operating systems.

@@ -1,8 +1,6 @@
 # @file codeql.yml
-# @brief Performs GitHub CodeQL analysis with an explicit C++ build and least-privilege permissions.
-
+# @brief Retain the original real C++ configuration and add supported application-language scans.
 name: CodeQL
-
 on:
   push:
     branches: [main]
@@ -11,35 +9,63 @@ on:
   schedule:
     - cron: "23 9 * * 4"
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   analyze:
     name: C++ security analysis
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
-      actions: read
       contents: read
       security-events: write
     steps:
-      - name: Check out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0; coordinated version
+      - name: Check out the analyzed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { persist-credentials: false }
+      - name: Initialize the original C++ configuration
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           languages: c-cpp
           build-mode: manual
           queries: security-extended
           trap-caching: false
           dependency-caching: false
-      - name: Build analyzed targets
+      - name: Build actual analyzed targets
         run: |
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
           cmake --build build --parallel
-      - name: Analyze
-        uses: github/codeql-action/analyze@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4.39.0; coordinated version
+      - name: Analyze the retained main-comparable configuration
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           upload-database: false
+          wait-for-processing: true
+  applications:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript, actions]
+    steps:
+      - name: Check out application source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { persist-credentials: false }
+      - name: Initialize the supported source language
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: security-extended
+          trap-caching: false
+          dependency-caching: false
+      - name: Analyze actual application findings
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
+          upload-database: false
+          wait-for-processing: true

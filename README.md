@@ -9,7 +9,35 @@ diagnostics.
 
 The IMLP/1 protocol in this repository is original and synthetic. The simulator does not implement,
 emulate, or claim compatibility with any commercial device or protocol, and it has no physical-I/O
-or network-socket integration.
+or protocol network-socket integration. The desktop application's HTTP listener is loopback-only
+and is separate from the fictional industrial transport.
+
+## Actual desktop workbench
+
+The version 1.1 source adds a real desktop application around these same C++ engines. Its native
+owner window opens a private local workspace and the browser GUI; Open reconnects that owned
+instance and Exit waits for its real HTTP/engine work to finish. Closing a browser tab alone does
+not stop the owner. There is no separate demo executable, system Python requirement for a frozen
+bundle, account service, remote telemetry or device connection.
+
+- **Stateful sessions:** edit write enablement, inclusive allowlist, bounded read attempts and up to
+  64 ordered operations on one simulated server. Inspect actual memory before/after, exact traces,
+  counters and per-operation errors. A corrupt write acknowledgement can coexist with a completed
+  write; the subsequent read proves what the simulator retained.
+- **Exact frames:** compose custom fields or import raw bytes and inspect the original codec's
+  accepted/rejected decision. Download an accepted frame as exact binary bytes.
+- **Fragmented streams:** import your own binary data or edit ordered hexadecimal chunks, then
+  review accepted frame offsets, discarded extents, CRC refusals and partial EOF. Empty input and
+  omitted diagnostic counts remain explicit.
+- **Durable evidence:** search/filter paged local history, reopen exact input and results, download
+  complete JSON or explicitly delete a selected record. Importing an exported result reruns its
+  input through the real engine; supplied success claims are never adopted.
+
+Prepared examples are optional editable inputs inside the full application. The reviewed native
+package recipe currently targets Windows x64; portable launch/unpack acceptance is not an OS
+installer transaction or a clean-machine guarantee. See [application instructions](docs/native-application.md),
+[current validation](docs/reports/native-application-2026-11-11.md) and [Releases](https://github.com/JasonStys/industrial-memory-protocol-workbench/releases).
+Keep all accompanying portable files together and store private workspaces outside the application.
 
 ## Why this exists
 
@@ -19,7 +47,7 @@ separate transport errors from remote errors, restrict writes below the UI, and 
 when a peer times out or sends malformed bytes. This workbench makes those behaviors small enough to
 inspect and rigorous enough to test.
 
-## 60-second quickstart
+## Original command-line quickstart
 
 Requirements: CMake 3.25+, a C++20 compiler, and Ninja or another CMake generator.
 
@@ -62,7 +90,7 @@ because the synthetic protocol has no authentication field.
 - Correlation-aware client with bounded read retry and no implicit write retry
 - Scripted timeout, disconnect, truncation, corruption, and wrong-ID faults
 - Packet-style traces, hexadecimal inspector, and reproducible test vector generation
-- 20 deterministic tests plus 22,000 generated/mutated/arbitrary property cases
+- 24 deterministic C++ tests, independent actual-CLI/IPC contracts and 22,000 generated/mutated/arbitrary property cases
 - Clang AddressSanitizer/UndefinedBehaviorSanitizer and bounded libFuzzer CI campaigns
 - Windows MSVC warnings-as-errors build and GitHub CodeQL security analysis
 - Release benchmark with checked-in evidence and CI-generated evidence artifacts
@@ -93,7 +121,7 @@ flowchart LR
 See [architecture.md](docs/architecture.md) for trust boundaries and data flow, and
 [protocol-spec.md](docs/protocol-spec.md) for the complete byte layout and state rules.
 
-## Safety model
+## Original CLI safety model
 
 Writes require all three conditions:
 
@@ -109,7 +137,7 @@ See [safety-and-security.md](docs/safety-and-security.md).
 
 | Evidence                          | Result                                                                 |
 | --------------------------------- | ---------------------------------------------------------------------- |
-| Deterministic C++ tests           | 20 passed                                                              |
+| Deterministic C++ tests           | 24 passed; includes existing stream cases                              |
 | Generated valid frame round trips | 10,000 passed                                                          |
 | Checksum mutation cases           | 2,000 rejected                                                         |
 | Arbitrary bounded decoder inputs  | 10,000 completed without unstable accepted frames                      |
@@ -135,20 +163,25 @@ See [cli.md](docs/cli.md) for examples and exit codes.
 
 ## Repository map
 
-| Path                      | Responsibility                                                            |
-| ------------------------- | ------------------------------------------------------------------------- |
-| `include/imlp/`           | Public types, codec, memory, server, transport, and client contracts.     |
-| `src/`                    | Bounded implementations of those contracts.                               |
-| `apps/cli_main.cpp`       | Simulator CLI, inspector, trace display, and safety opt-in.               |
-| `apps/benchmark_main.cpp` | Five-sample encode/server/decode throughput benchmark.                    |
-| `tests/`                  | Unit, integration, retry-policy, boundary, and property tests.            |
-| `fuzz/codec_fuzzer.cpp`   | libFuzzer target for decoder and simulator boundaries.                    |
-| `scripts/`                | Bash validation plus Python repository-policy and symbol-index tooling.   |
-| `docs/`                   | Architecture, protocol, security, testing, complexity, ADRs, and reports. |
-| `.github/workflows/`      | Cross-platform CI and CodeQL security analysis.                           |
+| Path                      | Responsibility                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| `include/imlp/`           | Public types, codec, memory, server, transport, and client contracts.                      |
+| `src/`                    | Bounded implementations of those contracts.                                                |
+| `apps/cli_main.cpp`       | Simulator CLI, inspector, trace display, and safety opt-in.                                |
+| `apps/benchmark_main.cpp` | Five-sample encode/server/decode throughput benchmark.                                     |
+| `apps/studio_main.cpp`    | Bounded binary IPC for actual stateful sessions, codec and stream evidence.                |
+| `imlp_studio/`            | Owned loopback API, strict source/output admission, private SQLite and Tk lifecycle.       |
+| `web/`                    | Editable TypeScript interface, supported file imports, result views and downloads.         |
+| `tools/`                  | Actual runtime notices, portable builder, safe archive extraction and full GUI acceptance. |
+| `tests/`                  | Unit, integration, retry-policy, boundary, and property tests.                             |
+| `fuzz/codec_fuzzer.cpp`   | libFuzzer target for decoder and simulator boundaries.                                     |
+| `scripts/`                | Bash validation plus Python repository-policy and symbol-index tooling.                    |
+| `docs/`                   | Architecture, protocol, security, testing, complexity, ADRs, and reports.                  |
+| `.github/workflows/`      | Cross-platform CI and CodeQL security analysis.                                            |
 
 [file-reference.md](docs/file-reference.md) describes every maintained file. Source headers point to
 the generated [symbol index](docs/generated/symbol-index.md) for exact declaration locations.
+The [complete current file guide](docs/source-file-guide.md) includes the new application and test files.
 
 ## Documentation
 
@@ -167,7 +200,9 @@ the generated [symbol index](docs/generated/symbol-index.md) for exact declarati
 
 ## License
 
-[MIT](LICENSE). The protocol design and sample memory map are synthetic educational artifacts.
+[MIT](LICENSE) covers authored source. Distributed Python, Tcl/Tk, PyInstaller and Microsoft C++
+Standard Library components retain their original terms in the bundle. The protocol design and
+sample memory map are synthetic educational artifacts; no legal-compliance certification is claimed.
 
 ## Documentation editions
 

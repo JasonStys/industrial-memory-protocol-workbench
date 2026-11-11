@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(
   industrial_memory_protocol_workbench
-  VERSION 1.0.0
+  VERSION 1.1.0
   DESCRIPTION "Defensive C++20 workbench for a synthetic industrial memory protocol"
   LANGUAGES CXX)
 
@@ -66,6 +66,20 @@ target_link_libraries(imlp-cli PRIVATE imlp)
 imlp_set_warnings(imlp-cli)
 imlp_enable_instrumentation(imlp-cli)
 
+set(IMLP_SOURCE_SHA "development" CACHE STRING "Exact application source commit or explicit development")
+if(NOT IMLP_SOURCE_SHA STREQUAL "development")
+  string(LENGTH "${IMLP_SOURCE_SHA}" IMLP_SOURCE_LENGTH)
+  if(NOT IMLP_SOURCE_LENGTH EQUAL 40 OR NOT IMLP_SOURCE_SHA MATCHES "^[a-f0-9]+$")
+    message(FATAL_ERROR "The native source identity must be a full lowercase Git SHA")
+  endif()
+endif()
+add_executable(imlp-studio apps/studio_main.cpp)
+target_link_libraries(imlp-studio PRIVATE imlp)
+target_compile_definitions(imlp-studio PRIVATE
+  IMLP_APP_VERSION="${PROJECT_VERSION}" IMLP_SOURCE_SHA="${IMLP_SOURCE_SHA}")
+imlp_set_warnings(imlp-studio)
+imlp_enable_instrumentation(imlp-studio)
+
 add_executable(imlp-benchmark apps/benchmark_main.cpp)
 target_link_libraries(imlp-benchmark PRIVATE imlp)
 imlp_set_warnings(imlp-benchmark)
@@ -87,6 +101,7 @@ if(IMLP_BUILD_TESTS)
   add_test(NAME imlp-tests COMMAND imlp-tests)
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
   add_test(NAME stream-cli COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_stream_cli.py $<TARGET_FILE:imlp-cli>)
+  add_test(NAME studio-cli COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_studio_cli.py $<TARGET_FILE:imlp-studio>)
 endif()
 
 if(IMLP_BUILD_FUZZER)
@@ -101,6 +116,6 @@ if(IMLP_BUILD_FUZZER)
 endif()
 
 include(GNUInstallDirs)
-install(TARGETS imlp imlp-cli EXPORT imlpTargets)
+install(TARGETS imlp imlp-cli imlp-studio EXPORT imlpTargets)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

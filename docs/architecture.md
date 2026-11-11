@@ -48,14 +48,14 @@ flowchart TB
 
 ## Trust boundaries
 
-| Boundary | Untrusted input | Control |
-| --- | --- | --- |
-| Hex CLI | text, address, length | complete `from_chars`, even-length hex, maximum frame size |
-| Codec | arbitrary byte span | header-before-payload validation, exact length, maximum payload, CRC, semantic rules |
-| Transport | deadline and peer result | positive deadline, explicit error category, owned trace bytes |
-| Server | decoded operation | request-only opcode, read-only default, independent allowlist |
-| Memory map | address plus length | subtraction-based range check and per-byte access validation |
-| Client response | peer frame | CRC, request ID, address, opcode, payload length, remote status |
+| Boundary        | Untrusted input          | Control                                                                              |
+| --------------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| Hex CLI         | text, address, length    | complete `from_chars`, even-length hex, maximum frame size                           |
+| Codec           | arbitrary byte span      | header-before-payload validation, exact length, maximum payload, CRC, semantic rules |
+| Transport       | deadline and peer result | positive deadline, explicit error category, owned trace bytes                        |
+| Server          | decoded operation        | request-only opcode, read-only default, independent allowlist                        |
+| Memory map      | address plus length      | subtraction-based range check and per-byte access validation                         |
+| Client response | peer frame               | CRC, request ID, address, opcode, payload length, remote status                      |
 
 ## State and retry model
 
@@ -84,14 +84,23 @@ cannot prove whether the remote write occurred.
 
 ## Build and analysis boundaries
 
-CMake defines one library and four consumers: CLI, benchmark, deterministic tests, and optional fuzz
+CMake defines one library and five consumers: CLI, studio bridge, benchmark, tests, and optional fuzz
 target. Public headers are compiled by MSVC and Clang. Linux CI adds AddressSanitizer,
 UndefinedBehaviorSanitizer, and libFuzzer. A separate CodeQL workflow uses a manual compiled-language
 build so analyzed translation units match the project.
+
+## Native application boundary
+
+The actual TypeScript UI talks to an owned standard-library Python loopback API. Strict JSON is
+encoded as a closed binary control envelope and sent through stdin to `imlp-studio`; it contains no
+paths, endpoint names or executable code. C++ checks every field before constructing one original
+memory server/client or decoder. Python independently checks source/version, request CRC, exact
+wire fields, counters and stream byte accounting before saving exact input/results in SQLite.
+The native Tk window retains its workspace lock and listener until real handlers/children drain.
+See [native application](native-application.md) for bounds, privacy and user journeys.
 
 ## Decisions
 
 - [ADR 0001: Original synthetic protocol](adr/0001-synthetic-protocol.md)
 - [ADR 0002: Explicit big-endian fields](adr/0002-explicit-endianness.md)
 - [ADR 0003: Retry reads, never implicit writes](adr/0003-retry-policy.md)
-
