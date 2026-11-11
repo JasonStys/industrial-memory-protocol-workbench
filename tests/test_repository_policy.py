@@ -85,3 +85,23 @@ def test_actual_office_macro_or_embedded_object_is_refused(tmp_path, member):
         archive.writestr(member, b"inert unsupported member")
     with pytest.raises(ValueError, match="Unsupported"):
         public_text(path, tmp_path)
+
+
+def test_original_main_comparable_cpp_codeql_configuration_is_retained():
+    """Lexical identity regression; actionlint separately parses real workflow semantics."""
+    source = (policy.REPOSITORY_ROOT / ".github/workflows/codeql.yml").read_text(encoding="utf-8")
+    original, added = source.split("\n  analyze:\n", 1)[1].split("\n  applications:\n", 1)
+    for field in ("strategy:", "matrix:", "environment:", "category:"):
+        assert field not in original
+    for field in (
+        "languages: c-cpp",
+        "build-mode: manual",
+        "queries: security-extended",
+        "upload-database: false",
+        "wait-for-processing: true",
+        "cmake --build",
+    ):
+        assert field in original
+    assert "language: [python, javascript-typescript, actions]" in added
+    assert "build-mode: none" in added and "queries: security-extended" in added
+    assert "continue-on-error" not in source and "paths-ignore" not in source

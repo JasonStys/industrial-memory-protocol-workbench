@@ -5,6 +5,7 @@ widgets, listeners, SQLite locks and completion signals are real.
 Locations: docs/generated/symbol-index.md.
 """
 
+import gc
 import json
 import sys
 import threading
@@ -30,6 +31,10 @@ def window(tmp_path, monkeypatch):
             owner.root.destroy()
         except tk.TclError as error:
             assert "application has been destroyed" in str(error)
+        # Finalize actual Tcl variables on their creating thread, not a later subprocess-I/O GC.
+        owner.path = None
+        owner.status = None
+        gc.collect()
 
 
 def test_real_owner_open_reopen_help_choice_and_completion(window, monkeypatch, tmp_path):

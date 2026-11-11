@@ -359,8 +359,12 @@ void exact_frame(std::ostream& out, const Request& request) {
   out << ",\"frame\":";
   if (!accepted)
     out << "null";
-  else
-    frame_json(out, request.mode == 3U ? *decoded.frame : request.frame);
+  else if (request.mode == 3U) {
+    if (!decoded.frame.has_value())
+      throw std::logic_error("accepted decode without a retained frame");
+    frame_json(out, decoded.frame.value());
+  } else
+    frame_json(out, request.frame);
 }
 
 /** Every response binds the actual product/version/source and exact consumed control-envelope CRC.

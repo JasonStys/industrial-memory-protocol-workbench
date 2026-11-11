@@ -7,6 +7,7 @@ description = "Offline session, codec and stream evidence application for the or
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--strict-markers"
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
 [tool.coverage.run]
 source = ["imlp_studio"]
 branch = true

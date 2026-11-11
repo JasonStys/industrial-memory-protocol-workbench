@@ -80,7 +80,13 @@ try {
     .waitFor();
   assert.ok((await page.locator("#identity").innerText()).includes(source));
   assert.ok((await page.locator("#identity").innerText()).includes("1.1.0"));
-  const healthy = await run("Exact binary write then read");
+  const literalTitle = 'Exact bytes <img src=x onerror="window.injected=true">';
+  const healthy = await run(literalTitle);
+  assert.ok(
+    (await page.locator("#selected").innerText()).includes(literalTitle),
+  );
+  assert.equal(await page.locator("#selected img").count(), 0);
+  assert.equal(await page.evaluate(() => globalThis.injected), undefined);
   assert.equal(healthy.report.operations[1].data_hex, "1a0d0a007fff");
   assert.equal(healthy.report.status, "completed");
   await page.locator("#example").selectOption("lost-ack");
@@ -224,13 +230,11 @@ try {
     .waitFor();
   records.pop();
 
-  await page
-    .locator("#frame-file")
-    .setInputFiles({
-      name: "too-large.bin",
-      mimeType: "application/octet-stream",
-      buffer: Buffer.alloc(279),
-    });
+  await page.locator("#frame-file").setInputFiles({
+    name: "too-large.bin",
+    mimeType: "application/octet-stream",
+    buffer: Buffer.alloc(279),
+  });
   await page.locator("#status.error").filter({ hasText: "278" }).waitFor();
   assert.equal(await page.locator("#export-evidence").isDisabled(), true);
 
@@ -298,6 +302,7 @@ try {
         forgedEvidenceRerun: true,
         explicitSingleRecordDeletion: true,
         oversizedBinaryRefused: true,
+        titleRenderedAsLiteralText: true,
         mobileWidths: [390, 320],
         browser: browser.version(),
         externalRequests,

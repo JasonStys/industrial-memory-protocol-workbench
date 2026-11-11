@@ -36,6 +36,31 @@ hosted checks remain required. The native consumer also now adds a selected-reco
 oversized binary refusal; final accepted counts are recorded by the corresponding current run,
 not inferred from the earlier candidate.
 
+## First hosted observations and corrections
+
+The first PR source `f8f9a0094969305baaf233c258a2ade4bb369598` compiled under Linux but its original
+clang-tidy gate flagged an optional dereference after an indirectly derived accepted flag. The
+bridge now explicitly checks `has_value()` in the decode branch before checked access. Original
+valid, CRC-corrupt and truncated actual-CLI/IPC oracles remain unchanged; no warning was suppressed.
+
+All four first processed CodeQL analyses had zero raw results, errors and warnings, but the PR
+aggregate was neutral because converting the original C++ job into a matrix removed its previous
+main-comparable environment/category. The workflow now retains the original nonmatrix `analyze`
+C++ manual build and default category, adding the other three languages in a separate job. A
+configuration-identity regression and actual actionlint validation protect that distinction; a
+neutral comparison warning is not reported as successful full-main clearance.
+
+The prior clean local source built ZIP SHA256
+`96ab9ee1c66e42ed7f0681becd92c99546a8331fba4267e8459c97ec67181a59` and completed actual extracted
+GUI, eight retained records, selected deletion, oversized-file refusal and two normal exits.
+That immutable local observation remains distinct from later corrected source and its hosted gates.
+
+The corrected local source suite passed 198 parent tests with the same95.35% combined coverage and
+the unchanged90% floor. One intermediate run exposed a Tk-variable deallocator warning during a
+later Windows subprocess-I/O collection. The owner fixture now releases its actual Tcl variables
+on their creating thread after its assertions. Unraisable-finalizer warnings are treated as errors;
+the subsequent complete198-test run passed without a warning. No warning filter or case was skipped.
+
 ## Independent numerical and negative oracles
 
 Python `struct` and `zlib.crc32` construct the expected wire layout independently of product codecs;
