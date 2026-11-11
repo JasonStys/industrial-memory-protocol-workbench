@@ -36,6 +36,7 @@ Generated from Git tracked and proposed public files; ignored private runtimes a
 | [`docs/protocol-spec.md`](../docs/protocol-spec.md) | IMLP/1 protocol specification |
 | [`docs/reports/actions-review-2026-10-14.md`](../docs/reports/actions-review-2026-10-14.md) | Actions maintenance review — 2026-10-14 |
 | [`docs/reports/documentation-refresh-2026-11-09.md`](../docs/reports/documentation-refresh-2026-11-09.md) | Documentation refresh — 2026-11-09 |
+| [`docs/reports/installed-windows-1.1.0-2026-11-11.md`](../docs/reports/installed-windows-1.1.0-2026-11-11.md) | Observed installed workflows, distribution identity, practical instructions and validation limits. |
 | [`docs/reports/maintenance-audit-2026-09-18.md`](../docs/reports/maintenance-audit-2026-09-18.md) | Maintenance audit — 2026-09-18 |
 | [`docs/reports/native-application-2026-11-11.md`](../docs/reports/native-application-2026-11-11.md) | Native application validation 11 November 2026 |
 | [`docs/reports/portfolio-sync-2026-10-14.md`](../docs/reports/portfolio-sync-2026-10-14.md) | Portfolio synchronization — 2026-10-14 |
@@ -44,6 +45,8 @@ Generated from Git tracked and proposed public files; ignored private runtimes a
 | [`docs/reports/publications.json`](../docs/reports/publications.json) | Product configuration, dependency identity or repository publication metadata. |
 | [`docs/reports/stream-2026-11-09.md`](../docs/reports/stream-2026-11-09.md) | Stream inspector validation â€” November 9, 2026 |
 | [`docs/reports/validation-report.md`](../docs/reports/validation-report.md) | Validation report |
+| [`docs/reports/windows-application-guide-1.1.0.docx`](../docs/reports/windows-application-guide-1.1.0.docx) | Current installed application Word guide with actual screenshots, immutable source and measured limits. |
+| [`docs/reports/windows-application-guide-1.1.0.json`](../docs/reports/windows-application-guide-1.1.0.json) | Exact current Word, screenshot, source and individually reviewed page identities. |
 | [`docs/safety-and-security.md`](../docs/safety-and-security.md) | Safety and security model |
 | [`docs/source-file-guide.md`](../docs/source-file-guide.md) | Complete maintained file guide |
 | [`docs/sources.md`](../docs/sources.md) | Primary sources |

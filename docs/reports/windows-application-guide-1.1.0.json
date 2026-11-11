@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "repository": "industrial-memory-protocol-workbench",
+  "runtimeVersion": "1.1.0",
+  "runtimeSource": "a70fe14ab0f94ce21e4b6f271be551a8618f8ffa",
+  "createdAt": "2026-11-11T19:25:10.739Z",
+  "author": "Jason Stys",
+  "document": "windows-application-guide-1.1.0.docx",
+  "sha256": "ad5b892a8a9fad9fed62c5278cbd56eaf5afd8ab91040c090dc62b91e63c5d9c",
+  "screenshots": [
+    {
+      "file": "01-write-ack-review.png",
+      "sha256": "a6c0acc1e959a5555b9f5dce3994602e3761faebf67e68a1c14425b460e9b22a",
+      "width": 1152,
+      "height": 604,
+      "caption": "The checksum failure affects the acknowledgment, while actual memory already contains the new bytes. The following read confirms them; a failed client result is not proof of an unperformed write."
+    },
+    {
+      "file": "02-stream-offset-review.png",
+      "sha256": "8d3cdd44b334e08a5b86a177adb581d43cfebe6973f249ce8991b4684d854daa",
+      "width": 1152,
+      "height": 622,
+      "caption": "All 35 concatenated bytes are accounted for: five discarded bytes, one accepted 28-byte frame and two truncated final bytes. Offsets are zero based and the actual raw frame remains downloadable."
+    }
+  ],
+  "snippets": [
+    {
+      "file": "imlp_studio/engine.py",
+      "first": 63,
+      "last": 82,
+      "sha256": "0ec2dc59c7f1f02e4e0b20cb5dcd2a979c76140b5533db888c5bda84e42a8df3",
+      "url": "https://github.com/JasonStys/industrial-memory-protocol-workbench/blob/a70fe14ab0f94ce21e4b6f271be551a8618f8ffa/imlp_studio/engine.py#L63"
+    }
+  ],
+  "observedTests": [
+    {
+      "name": "Actual app and restart",
+      "observed": "Ten actual executions passed; eight records remained after two explicit test deletions. Exact evidence and raw-frame exports, two normal exits and restart were verified.",
+      "result": "Passed"
+    },
+    {
+      "name": "Original domain gates",
+      "observed": "198 Python tests plus 13 isolated Tcl cases, 24 C++ tests, 22000 properties, three CTest groups and five TypeScript tests passed; original sanitizers, fuzzing and benchmarks remain separate hosted gates.",
+      "result": "Passed"
+    },
+    {
+      "name": "Distribution and security",
+      "observed": "All five release files matched provider hashes and all 82 installed files stayed unchanged. Three main workflows and four actual raw CodeQL categories passed before publication.",
+      "result": "Passed"
+    }
+  ],
+  "visualReview": {
+    "approved": true,
+    "reviewer": "audit_cyber",
+    "ooxmlSchema": "passed",
+    "pages": [
+      {
+        "page": 1,
+        "sha256": "e1c2db146d7b81a447f72a1b4e09c3901be06381abba7682e15735af36f089ae"
+      },
+      {
+        "page": 2,
+        "sha256": "5db1738ef08473054c139411f96fff5025953c4295bfe4d0f70d2b2e2fcec551"
+      },
+      {
+        "page": 3,
+        "sha256": "8d86fd71f0f3f0ce199cdb26589dc35a5d9d87350f40ca248c85dc3ca3f2257a"
+      },
+      {
+        "page": 4,
+        "sha256": "98b7a5bc9bb51f51262600395969eed4ed4579b1e43037e184ee78d9391b9757"
+      }
+    ],
+    "scope": "All four final pages individually inspected at original resolution; exact installed synthetic screenshots and immutable code; no ordinary user data."
+  }
+}

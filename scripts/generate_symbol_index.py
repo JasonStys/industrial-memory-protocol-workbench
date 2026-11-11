@@ -138,7 +138,21 @@ def render_file_guide() -> str:
     rows = []
     for path in discover_files(REPOSITORY_ROOT):
         relative = path.relative_to(REPOSITORY_ROOT).as_posix()
-        if path.suffix == ".docx":
+        if relative == "docs/reports/windows-application-guide-1.1.0.docx":
+            purpose = (
+                "Current installed application Word guide with actual screenshots, "
+                "immutable source and measured limits."
+            )
+        elif relative == "docs/reports/windows-application-guide-1.1.0.json":
+            purpose = (
+                "Exact current Word, screenshot, source and individually reviewed page identities."
+            )
+        elif relative == "docs/reports/installed-windows-1.1.0-2026-11-11.md":
+            purpose = (
+                "Observed installed workflows, distribution identity, "
+                "practical instructions and validation limits."
+            )
+        elif path.suffix == ".docx":
             purpose = (
                 "Historical reviewed Word edition; its publication manifest retains "
                 "its own source scope."
