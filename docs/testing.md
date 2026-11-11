@@ -117,6 +117,10 @@ bytes, a corrupt write ACK with retained memory, write refusal, custom frame com
 imports, fragmented noisy/EOF stream offsets, raw-frame/JSON exports, forged-evidence rerun, blocked
 version, selected deletion, oversized binary refusal, search and 320/390-pixel layouts. A second
 actual launch reopens the eight retained records and refuses the old capability before normal Exit.
+An additional deterministic interleaving holds an actual selected-file read and actual completed
+API response to verify that an imported input cannot claim a rerun while busy. The earlier frozen
+candidate fails that oracle; fixed source refuses it. No fabricated engine/API response supplies
+expected evidence. Ten real executions leave eight records after two explicit temporary deletions.
 
 No binary is uploaded by default. No source job or package job creates releases, provisions cloud
 services, installs the app, touches ordinary profiles, starts Docker or connects to equipment.

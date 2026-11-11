@@ -255,6 +255,132 @@ try {
     JSON.parse(await page.locator("#evidence").innerText()),
     lost,
   );
+  // Pause a real selected File read and the real completed API response; never invent an answer.
+  await page.locator("#example").selectOption("healthy");
+  await page.locator("#load-example").click();
+  const racingTitle = "Active real run during a pending evidence file read";
+  await page.locator("#title").fill(racingTitle);
+  await page.evaluate(() => {
+    const original = File.prototype.arrayBuffer;
+    globalThis.restoreEvidenceRead = () => {
+      File.prototype.arrayBuffer = original;
+    };
+    File.prototype.arrayBuffer = function () {
+      if (this.name !== "pending-evidence.json") return original.call(this);
+      return new Promise((resolve, reject) => {
+        globalThis.releaseEvidenceRead = () =>
+          original.call(this).then(resolve, reject);
+      });
+    };
+  });
+  let releaseResponse;
+  const responseGate = new Promise((resolve) => {
+    releaseResponse = resolve;
+  });
+  let markRealResponse;
+  let rejectRealResponse;
+  const realResponseReady = new Promise((resolve, reject) => {
+    markRealResponse = resolve;
+    rejectRealResponse = reject;
+  });
+  let racingRecord;
+  let routeStarted = false;
+  let routeFailure;
+  let markRouteDone;
+  const routeDone = new Promise((resolve) => {
+    markRouteDone = resolve;
+  });
+  await page.route(authority + "/api/run", async (route) => {
+    routeStarted = true;
+    try {
+      const actual = await route.fetch();
+      assert.equal(actual.status(), 201);
+      racingRecord = await actual.json();
+      markRealResponse();
+      await responseGate;
+      await route.fulfill({ response: actual });
+    } catch (error) {
+      routeFailure = error;
+      rejectRealResponse(error);
+    } finally {
+      markRouteDone();
+    }
+  });
+  try {
+    await page.locator("#evidence-file").setInputFiles({
+      name: "pending-evidence.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(lost)),
+    });
+    await page.waitForFunction(
+      () => typeof globalThis.releaseEvidenceRead === "function",
+    );
+    await page.locator("#run").click();
+    await realResponseReady;
+    await page.evaluate(() => {
+      globalThis.releaseEvidenceRead();
+    });
+    const importOutcome = await page.waitForFunction(() => {
+      const status = document.querySelector("#status");
+      if (
+        status?.classList.contains("error") &&
+        status.textContent.includes("loaded input has not been run")
+      )
+        return { refused: true, message: status.textContent };
+      if (status?.textContent.includes("Imported input reran"))
+        return { refused: false, message: status.textContent };
+      return false;
+    });
+    const disposition = await importOutcome.jsonValue();
+    await writeFile(
+      resolve(output, "async-import-disposition.json"),
+      JSON.stringify(disposition, null, 2) + "\n",
+    );
+    assert.equal(
+      disposition.refused,
+      true,
+      "A pending imported input cannot claim a rerun while the actual operation is still busy",
+    );
+    assert.equal(await page.locator("#run").isDisabled(), true);
+  } finally {
+    releaseResponse();
+    if (routeStarted) await routeDone;
+    await page.unroute(authority + "/api/run");
+    await page.evaluate(() => {
+      globalThis.restoreEvidenceRead();
+    });
+  }
+  assert.equal(routeFailure, undefined);
+  await page.locator("#run:enabled").waitFor();
+  assert.equal(racingRecord.report.status, "completed");
+  assert.equal(racingRecord.title, racingTitle);
+  await page.locator("#search").fill("");
+  await page.locator("#refresh").click();
+  await page
+    .locator("#history-total")
+    .filter({ hasText: "9 matching" })
+    .waitFor();
+  assert.equal(await page.locator("#history img").count(), 0);
+  await page
+    .locator("#history button")
+    .filter({ hasText: racingTitle })
+    .click();
+  await page
+    .locator("#selected")
+    .filter({ hasText: racingRecord.id })
+    .waitFor();
+  const removeRace = page.waitForResponse(
+    (response) => response.url() === authority + "/api/delete",
+  );
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.locator("#delete").click();
+  assert.equal((await removeRace).status(), 200);
+  await page
+    .locator("#history-total")
+    .filter({ hasText: "8 matching" })
+    .waitFor();
+  await page.locator("#history button").filter({ hasText: "Lost ACK" }).click();
+  await page.locator("#selected").filter({ hasText: lost.id }).waitFor();
   await page
     .locator("#operations")
     .fill('[{"verb":"exec","host":"never accepted"}]');
@@ -303,6 +429,10 @@ try {
         explicitSingleRecordDeletion: true,
         oversizedBinaryRefused: true,
         titleRenderedAsLiteralText: true,
+        asyncEvidenceImportWhileBusyRefused: true,
+        actualApiResponseHeldAndReused: true,
+        actualExecutionCycles: 10,
+        explicitlyDeletedTemporaryRecords: 2,
         mobileWidths: [390, 320],
         browser: browser.version(),
         externalRequests,

@@ -71,6 +71,18 @@ so an early external-tool failure cannot be overwritten by a later successful co
 default PowerShell block. All original commands remain required; actionlint and the configuration
 regression validate this runner contract rather than treating a green last command as every gate.
 
+An additional real UI interleaving exposed a misleading status claim: an evidence-file read could
+finish while a different experiment was busy, and the silent busy return still allowed its import
+handler to announce a rerun. The preserved actual `f2cc10800d3214c02607dd5f9061682e2d3322f8` frozen
+candidate reproduced that message. Stored results stayed truthful, but the user-facing claim did not.
+Busy reentry now explicitly refuses the imported run. The regression pauses a real selected file
+read and a completed real API response, then releases the unchanged data/response; it does not
+invent an API answer. Ten actual execution cycles leave eight records after two explicit deletions.
+The original selected-evidence, byte/offset, mobile and normal-exit assertions remain required.
+
+The native consumer also canonicalizes its output argument before changing working directories,
+so manual relative output paths cannot silently scatter evidence into a temporary runtime folder.
+
 ## Independent numerical and negative oracles
 
 Python `struct` and `zlib.crc32` construct the expected wire layout independently of product codecs;

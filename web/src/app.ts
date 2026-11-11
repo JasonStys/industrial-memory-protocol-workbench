@@ -357,7 +357,10 @@ async function refresh(): Promise<void> {
 }
 
 async function run(value: JsonObject = currentInput()): Promise<void> {
-  if (busy) return;
+  if (busy)
+    throw new Error(
+      "Another experiment is already running; this loaded input has not been run. Wait for completion, then Run.",
+    );
   const captured = revision;
   setBusy(true);
   status("Running the actual fixed C++ engines on inert simulator bytes…");

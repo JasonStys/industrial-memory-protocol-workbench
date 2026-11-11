@@ -107,6 +107,7 @@ def main():
     parser.add_argument("executable", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    args.output = args.output.absolute()
     executable = args.executable.resolve(strict=True)
     metadata = json.loads((executable.parent / "RELEASE.json").read_text(encoding="utf-8"))
     source = metadata["sourceCommit"]
