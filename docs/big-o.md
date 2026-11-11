@@ -3,18 +3,18 @@
 Let `n` be payload length, where `0 ≤ n ≤ 256`; `m` be memory operation length, where
 `1 ≤ m ≤ 256`; and `t` be the number of retained trace records.
 
-| Operation | Time | Additional space | Bound or rationale |
-| --- | --- | --- | --- |
-| CRC-32 | O(n) | O(1) | Eight bit steps per byte |
-| Encode frame | O(n) | O(n) | One owned output vector, at most 278 bytes |
-| Decode frame | O(n) | O(n) | CRC scan plus owned payload, at most 256 bytes |
-| Hex encode/decode | O(n) | O(n) | Two text characters per byte |
-| Memory read | O(m) | O(m) | Validate region then copy returned bytes |
-| Memory write | O(m) | O(1) | Validate region then copy into fixed array |
-| Server handle | O(n) | O(n) | Decode, policy check, memory operation, encode |
-| Client read/write | O(a·n) | O(n) | `a` is bounded read attempts; writes fix `a=1` |
-| Fault dequeue | O(1) | O(1) | `std::deque` front/pop-front |
-| Trace append | amortized O(n) | O(t·n) | Each record owns frame bytes; caller may clear trace |
+| Operation         | Time           | Additional space | Bound or rationale                                   |
+| ----------------- | -------------- | ---------------- | ---------------------------------------------------- |
+| CRC-32            | O(n)           | O(1)             | Eight bit steps per byte                             |
+| Encode frame      | O(n)           | O(n)             | One owned output vector, at most 278 bytes           |
+| Decode frame      | O(n)           | O(n)             | CRC scan plus owned payload, at most 256 bytes       |
+| Hex encode/decode | O(n)           | O(n)             | Two text characters per byte                         |
+| Memory read       | O(m)           | O(m)             | Validate region then copy returned bytes             |
+| Memory write      | O(m)           | O(1)             | Validate region then copy into fixed array           |
+| Server handle     | O(n)           | O(n)             | Decode, policy check, memory operation, encode       |
+| Client read/write | O(a·n)         | O(n)             | `a` is bounded read attempts; writes fix `a=1`       |
+| Fault dequeue     | O(1)           | O(1)             | `std::deque` front/pop-front                         |
+| Trace append      | amortized O(n) | O(t·n)           | Each record owns frame bytes; caller may clear trace |
 
 ## Data-structure choices
 
@@ -39,7 +39,20 @@ configuration or protocol constants. The educational trace vector grows until `c
 called. A long-running adapter should replace it with a bounded ring buffer or streaming sink and an
 observable dropped-record counter.
 
-
 ## Bounded stream inspection
 
 A fixed278-byte ring retains partial candidates, with O(1) head removal. Header validation copies18bytes once per candidate; exact decoding/CRC copies/scans at most278bytes. Thus N bounded input bytes require O(N × maximum_frame_size) worst-case work under corruption/resynchronization, with the protocol maximum constant. Clean traffic is linear in wire bytes. Pending state is O(maximum_frame_size); per-feed output is bounded by4096inputbytes plus prior partial state, at most256diagnostic records and explicit omitted-record/byte counts. Stream lifetime caps64KiB. CLI output retains all validated frames plus at most256diagnostics for the whole invocation; it never retains payload bytes in JSON. The separate educational transport trace's existing lifetime/growth caveat remains unchanged.
+
+## Desktop request and history bounds
+
+The new desktop bridge bounds a session to 64 operations, at most three queued faults per operation
+and three read attempts (writes remain one attempt). A session trace has at most384 rows; this
+caller-level bound does not change the general library's trace lifetime contract. Each stream is
+at most64KiB/256chunks and carries exact accepted bytes in its own bounded evidence, unlike the
+older metadata-only CLI stream report. Input/output validation is linear in these bounded evidence
+bytes except sorting known stream extents, O(r log r), where r is bounded by frames plus256issues.
+
+SQLite stores at most1000records/100MiB and returns25metadata rows per page. Literal substring
+search and capacity checks scan at most those1000records; loading/exporting one record costs O(b)
+for its bounded evidence bytes. No background upload, hidden pruning or unbounded execution queue
+is introduced. Four engine slots/eight connection slots bound concurrent work; excess is refused.

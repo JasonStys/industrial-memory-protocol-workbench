@@ -1,0 +1,20 @@
+# File: Defines native-studio metadata and independent Python validation gates.
+[project]
+name = "industrial-memory-protocol-workbench"
+version = "1.1.0"
+requires-python = ">=3.14.10"
+description = "Offline session, codec and stream evidence application for the original C++ engines"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+[tool.coverage.run]
+source = ["imlp_studio"]
+branch = true
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

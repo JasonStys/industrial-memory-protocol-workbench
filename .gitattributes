@@ -1,2 +1,5 @@
 
 docs/reports/project-guide.docx binary
+# Keep exact upstream notice bytes unchanged across checkouts.
+/licenses/** -text
+/licenses/MSVC-STL-LICENSE.txt whitespace=cr-at-eol

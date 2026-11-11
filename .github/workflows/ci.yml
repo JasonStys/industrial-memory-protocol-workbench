@@ -24,6 +24,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - name: Use the source index's actual Python grammar
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: { python-version: "3.14.10", check-latest: true }
       - name: Check C++ formatting
         run: >-
           find include src apps tests fuzz -type f \( -name '*.cpp' -o -name '*.hpp' \)
@@ -76,6 +80,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - name: Use the source index's actual Python grammar
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with: { python-version: "3.14.10", check-latest: true }
       - name: Configure
         run: cmake -S . -B build -A x64 -DIMLP_BUILD_TESTS=ON
       - name: Build with warnings as errors
