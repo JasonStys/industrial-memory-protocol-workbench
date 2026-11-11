@@ -142,6 +142,13 @@ def test_real_minimum_window_keeps_open_help_exit_controls_visible(window):
     window.root.geometry("560x350")
     window.root.update()
     window.root.update_idletasks()
+    window.status.set(
+        "Closing safely: waiting for owned experiments and HTTP handlers. "
+        "Saved workspace ownership is retained."
+    )
+    window.root.update_idletasks()
+    assert window.status_label.winfo_reqwidth() <= window.status_label.winfo_width()
+    assert window.status_label.winfo_reqheight() <= window.status_label.winfo_height()
     for button in (window.open_button, window.exit_button):
         assert button.winfo_ismapped()
         assert button.winfo_rooty() >= window.root.winfo_rooty()

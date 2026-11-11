@@ -105,3 +105,12 @@ def test_original_main_comparable_cpp_codeql_configuration_is_retained():
     assert "language: [python, javascript-typescript, actions]" in added
     assert "build-mode: none" in added and "queries: security-extended" in added
     assert "continue-on-error" not in source and "paths-ignore" not in source
+    quality = (policy.REPOSITORY_ROOT / ".github/workflows/native.yml").read_text(encoding="utf-8")
+    compound = quality.split("- name: Source style and exact symbol locations\n", 1)[1].split(
+        "      - run:", 1
+    )[0]
+    assert "shell: bash" in compound and "set -euo pipefail" in compound
+    original_ci = (policy.REPOSITORY_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    for block in original_ci.split("- name: Check repository policy\n")[1:]:
+        gate = block.split("      - name:", 1)[0]
+        assert "shell: bash" in gate and "set -euo pipefail" in gate

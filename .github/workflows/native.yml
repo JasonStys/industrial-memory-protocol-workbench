@@ -49,7 +49,9 @@ jobs:
             python -m pytest -q --cov=imlp_studio --cov-report=term-missing
           fi
       - name: Source style and exact symbol locations
+        shell: bash
         run: |
+          set -euo pipefail
           python -m ruff check imlp_studio tools tests scripts
           python -m ruff format --check imlp_studio tools tests scripts
           python scripts/generate_symbol_index.py --check

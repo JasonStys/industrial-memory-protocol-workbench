@@ -61,6 +61,16 @@ later Windows subprocess-I/O collection. The owner fixture now releases its actu
 on their creating thread after its assertions. Unraisable-finalizer warnings are treated as errors;
 the subsequent complete198-test run passed without a warning. No warning filter or case was skipped.
 
+A real minimum-size owner probe also measured a564-pixel requested closing-status line inside a
+524-pixel label. Its wrap width now fits the supported560-pixel window, and the actual Tk test
+checks full requested label dimensions plus visible Open/Exit controls. This fixes clipped status
+words without changing memory geometry, workflow outcomes or completion-based shutdown.
+
+Compound quality/policy commands now explicitly use Bash with `set -euo pipefail` on every OS,
+so an early external-tool failure cannot be overwritten by a later successful command in a
+default PowerShell block. All original commands remain required; actionlint and the configuration
+regression validate this runner contract rather than treating a green last command as every gate.
+
 ## Independent numerical and negative oracles
 
 Python `struct` and `zlib.crc32` construct the expected wire layout independently of product codecs;

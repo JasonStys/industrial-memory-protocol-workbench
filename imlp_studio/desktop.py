@@ -96,7 +96,8 @@ class Window:
                 "remote service is required."
             )
         )
-        ttk.Label(content, textvariable=self.status, wraplength=610).pack(fill="x", pady=14)
+        self.status_label = ttk.Label(content, textvariable=self.status, wraplength=500)
+        self.status_label.pack(fill="x", pady=14)
         controls = ttk.Frame(self.root, padding=(18, 8, 18, 16))
         controls.pack(side="bottom", fill="x")
         self.open_button = ttk.Button(controls, text="Open application", command=self.open)

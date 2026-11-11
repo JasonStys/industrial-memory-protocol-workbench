@@ -45,3 +45,6 @@ while this list uses stable documentation URLs so readers can check current guid
 - [Python socketserver ownership](https://docs.python.org/3.14/library/socketserver.html)
   describes server shutdown, thread ownership and blocking close. Actual held-work tests independently
   verify that this application's owner does not release the workspace before its handlers finish.
+- [GitHub workflow shell exit behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#exit-codes-and-error-action-preference)
+  documents the PowerShell last-exit-code wrapper and explicit Bash pipeline fail-fast behavior;
+  compound quality commands select the latter on all three source-validation operating systems.
